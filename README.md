@@ -1,2 +1,2 @@
-# loupe
- Magnifying glass for text fields
+# Loupe
+ Magnifying glass for text fields.
