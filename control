@@ -1,11 +1,11 @@
 Package: com.udevs.loupe
 Name: Loupe
-Version: 1.1.0
+Version: 1.2.0
 Architecture: iphoneos-arm
 Description: Magnifying glass for text fields
 Maintainer: udevs
 Author: udevs
 Section: Tweaks
-Depends: mobilesubstrate (>= 0.9.5000), com.rpetrich.rocketbootstrap (>= 1.0.2), firmware(>=13.0)
+Depends: mobilesubstrate (>= 0.9.5000), com.rpetrich.rocketbootstrap (>= 1.0.2), firmware(>=13.0), com.opa334.altlist
 Icon: https://udevsharold.github.io/repo/depictions/com.udevs.loupe/icon/icon.png
 Depiction: https://udevsharold.github.io/repo/depictions/?p=com.udevs.loupe

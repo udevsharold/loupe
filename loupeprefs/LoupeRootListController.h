@@ -11,6 +11,10 @@
 @property(nonatomic, retain) UIBarButtonItem *respringBtn;
 @end
 
+@interface PSSpecifier ()
+-(void)setValues:(id)arg1 titles:(id)arg2;
+@end
+
 @interface SBSRelaunchAction : NSObject
 @property (nonatomic, readonly) unsigned long long options;
 @property (nonatomic, readonly, copy) NSString *reason;

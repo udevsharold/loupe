@@ -61,11 +61,47 @@
         [tweakEnabledSpec setProperty:PREFS_CHANGED_NN forKey:@"PostNotification"];
         [rootSpecifiers addObject:tweakEnabledSpec];
         
-        //WebView
+        //Manage Apps
+        PSSpecifier *manageAppsGroupSpec = [PSSpecifier preferenceSpecifierNamed:@"Apps" target:self set:nil get:nil detail:nil cell:PSGroupCell edit:nil];
+        [manageAppsGroupSpec setProperty:@"Changing apps filter mode requires a respring." forKey:@"footerText"];
+        [rootSpecifiers addObject:manageAppsGroupSpec];
+        
+        PSSpecifier *altListSpec = [PSSpecifier preferenceSpecifierNamed:@"Manage Apps" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:NSClassFromString(@"ATLApplicationListMultiSelectionController") cell:PSLinkListCell edit:nil];
+        [altListSpec setProperty:LOUPE_IDENTIFIER forKey:@"defaults"];
+        [altListSpec setProperty:@"Manage Apps" forKey:@"label"];
+        [altListSpec setProperty:@[
+            @{@"sectionType":@"Visible"},
+        ] forKey:@"sections"];
+        [altListSpec setProperty:@"filteredApps" forKey:@"key"];
+        [altListSpec setProperty:@YES forKey:@"defaultApplicationSwitchValue"];
+        [altListSpec setProperty:@YES forKey:@"useSearchBar"];
+        [altListSpec setProperty:@YES forKey:@"hideSearchBarWhileScrolling"];
+        [altListSpec setProperty:@YES forKey:@"alphabeticIndexingEnabled"];
+        [altListSpec setProperty:@YES forKey:@"includeIdentifiersInSearch"];
+        [rootSpecifiers addObject:altListSpec];
+        
+        PSSpecifier *appsFilterSelectionSpec = [PSSpecifier preferenceSpecifierNamed:@"Apps Filter" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSegmentCell edit:nil];
+        [appsFilterSelectionSpec setValues:@[@0, @1] titles:@[@"Whitelist", @"Blacklist"]];
+        [appsFilterSelectionSpec setProperty:@0 forKey:@"default"];
+        [appsFilterSelectionSpec setProperty:@"appsFilter" forKey:@"key"];
+        [appsFilterSelectionSpec setProperty:LOUPE_IDENTIFIER forKey:@"defaults"];
+        [appsFilterSelectionSpec setProperty:PREFS_CHANGED_NN forKey:@"PostNotification"];
+        [rootSpecifiers addObject:appsFilterSelectionSpec];
+        
+        //TextFields
         PSSpecifier *enabledOnWebViewGroupSpec = [PSSpecifier preferenceSpecifierNamed:@"Magnifying Glass" target:nil set:nil get:nil detail:nil cell:PSGroupCell edit:nil];
-        [enabledOnWebViewGroupSpec setProperty:@"Enable magnifying glass in web views." forKey:@"footerText"];
+        [enabledOnWebViewGroupSpec setProperty:@"Enable magnifying glass in common text input fields and/or web views." forKey:@"footerText"];
         [rootSpecifiers addObject:enabledOnWebViewGroupSpec];
         
+        PSSpecifier *enabledOTextFieldSpec = [PSSpecifier preferenceSpecifierNamed:@"Text Field" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
+        [enabledOTextFieldSpec setProperty:@"Text Field" forKey:@"label"];
+        [enabledOTextFieldSpec setProperty:@"enabledOTextField" forKey:@"key"];
+        [enabledOTextFieldSpec setProperty:@YES forKey:@"default"];
+        [enabledOTextFieldSpec setProperty:LOUPE_IDENTIFIER forKey:@"defaults"];
+        [enabledOTextFieldSpec setProperty:PREFS_CHANGED_NN forKey:@"PostNotification"];
+        [rootSpecifiers addObject:enabledOTextFieldSpec];
+        
+        //WebView
         PSSpecifier *enabledOnWebViewSpec = [PSSpecifier preferenceSpecifierNamed:@"Web View" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
         [enabledOnWebViewSpec setProperty:@"Web View" forKey:@"label"];
         [enabledOnWebViewSpec setProperty:@"enabledOnWebView" forKey:@"key"];

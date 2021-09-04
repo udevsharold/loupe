@@ -13,10 +13,12 @@
 static LPMagnifier *magnifier;
 static LPPrefsManagerClient *prefsClient;
 static BOOL enabled;
+static BOOL enabledOTextField;
 static BOOL enabledOnWebView;
 static BOOL forceTrackpadMagnify;
 static CGFloat yOffset;
 static CGFloat xOffset;
+static int appsFilter;
 
 %group LOUPE_GROUP
 
@@ -25,7 +27,7 @@ static CGFloat xOffset;
 -(void)rangeSelectionStarted:(CGPoint)point{
     HBLogDebug(@"rangeSelectionStarted");
     %orig;
-    if (enabled){
+    if (enabled && enabledOTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -33,7 +35,7 @@ static CGFloat xOffset;
 -(void)rangeSelectionMoved:(CGPoint)point withTouchPoint:(CGPoint)touchPoint{
     HBLogDebug(@"rangeSelectionMoved");
     %orig;
-    if (enabled){
+    if (enabled && enabledOTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -41,7 +43,7 @@ static CGFloat xOffset;
 -(void)rangeSelectionEnded:(CGPoint)point{
     HBLogDebug(@"rangeSelectionEnded");
     %orig;
-    if (enabled){
+    if (enabled && enabledOTextField){
         [magnifier stopMagnifying:YES];
     }
 }
@@ -49,7 +51,7 @@ static CGFloat xOffset;
 -(void)beginFloatingCursorAtPoint:(CGPoint)point{
     HBLogDebug(@"beginFloatingCursorAtPoint");
     %orig;
-    if (enabled){
+    if (enabled && enabledOTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -57,7 +59,7 @@ static CGFloat xOffset;
 -(void)updateFloatingCursorAtPoint:(CGPoint)point velocity:(CGPoint)vel{
     HBLogDebug(@"updateFloatingCursorAtPoint");
     %orig;
-    if (enabled){
+    if (enabled && enabledOTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -65,7 +67,7 @@ static CGFloat xOffset;
 -(void)endFloatingCursor{
     HBLogDebug(@"endFloatingCursor");
     %orig;
-    if (enabled){
+    if (enabled && enabledOTextField){
         [magnifier stopMagnifying:YES];
     }
 }
@@ -73,7 +75,7 @@ static CGFloat xOffset;
 -(void)startAutoscroll:(CGPoint)point{
     HBLogDebug(@"startAutoscroll");
     %orig;
-    if (enabled && forceTrackpadMagnify){
+    if (enabled && enabledOTextField && forceTrackpadMagnify){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -114,6 +116,9 @@ static void reloadPrefs(){
     id enabledVal = [prefsClient valueForKey:@"enabled"];
     enabled = enabledVal ? [enabledVal boolValue] : YES;
     
+    id enabledOTextFieldVal = [prefsClient valueForKey:@"enabledOTextField"];
+    enabledOTextField = enabledOTextFieldVal ? [enabledOTextFieldVal boolValue] : YES;
+    
     id enabledOnWebViewVal = [prefsClient valueForKey:@"enabledOnWebView"];
     enabledOnWebView = enabledOnWebViewVal ? [enabledOnWebViewVal boolValue] : YES;
     
@@ -126,6 +131,9 @@ static void reloadPrefs(){
     
     id xOffsetVal = [prefsClient valueForKey:@"xOffset"];
     xOffset = xOffsetVal ? [xOffsetVal floatValue] : 0.f;
+    
+    id appsFilterVal = [prefsClient valueForKey:@"appsFilter"];
+    appsFilter = appsFilterVal ? [appsFilterVal intValue] : 0;
 }
 
 void flipLoupeEnableSwitch(BOOL enable){
@@ -169,9 +177,18 @@ BOOL loupeSwitchState(){
                     //HBLogDebug(@"YukonMagnifiersDisabled: %d", [kbPrefsController boolForPreferenceKey:@"YukonMagnifiersDisabled"]?1:0);
                     magnifier = [LPMagnifier sharedInstance];
                     reloadPrefs();
-                    magnifier.async = YES;
-                    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPrefs, (CFStringRef)PREFS_CHANGED_NN, NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
-                    %init(LOUPE_GROUP)
+                    
+                    NSArray *filteredApps = [prefsClient valueForKey:@"filteredApps"];
+                    NSString *bundleIdentifier = [NSBundle mainBundle].bundleIdentifier;
+                    BOOL shouldLoadTweak = (appsFilter == 0 && ![filteredApps containsObject:bundleIdentifier]) || (appsFilter != 0 && [filteredApps containsObject:bundleIdentifier]);
+                    
+                    if (shouldLoadTweak){
+                        magnifier.async = YES;
+                        CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)reloadPrefs, (CFStringRef)PREFS_CHANGED_NN, NULL, CFNotificationSuspensionBehaviorDeliverImmediately);
+                        %init(LOUPE_GROUP)
+                    }else{
+                        magnifier = nil;
+                    }
                 }
             }
         }
