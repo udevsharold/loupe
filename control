@@ -1,6 +1,6 @@
 Package: com.udevs.loupe
 Name: Loupe
-Version: 1.2.0
+Version: 1.2.1
 Architecture: iphoneos-arm
 Description: Magnifying glass for text fields
 Maintainer: udevs

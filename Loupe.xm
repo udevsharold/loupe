@@ -13,7 +13,7 @@
 static LPMagnifier *magnifier;
 static LPPrefsManagerClient *prefsClient;
 static BOOL enabled;
-static BOOL enabledOTextField;
+static BOOL enabledOnTextField;
 static BOOL enabledOnWebView;
 static BOOL forceTrackpadMagnify;
 static CGFloat yOffset;
@@ -27,7 +27,7 @@ static int appsFilter;
 -(void)rangeSelectionStarted:(CGPoint)point{
     HBLogDebug(@"rangeSelectionStarted");
     %orig;
-    if (enabled && enabledOTextField){
+    if (enabled && enabledOnTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -35,7 +35,7 @@ static int appsFilter;
 -(void)rangeSelectionMoved:(CGPoint)point withTouchPoint:(CGPoint)touchPoint{
     HBLogDebug(@"rangeSelectionMoved");
     %orig;
-    if (enabled && enabledOTextField){
+    if (enabled && enabledOnTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -43,7 +43,7 @@ static int appsFilter;
 -(void)rangeSelectionEnded:(CGPoint)point{
     HBLogDebug(@"rangeSelectionEnded");
     %orig;
-    if (enabled && enabledOTextField){
+    if (enabled && enabledOnTextField){
         [magnifier stopMagnifying:YES];
     }
 }
@@ -51,7 +51,7 @@ static int appsFilter;
 -(void)beginFloatingCursorAtPoint:(CGPoint)point{
     HBLogDebug(@"beginFloatingCursorAtPoint");
     %orig;
-    if (enabled && enabledOTextField){
+    if (enabled && enabledOnTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -59,7 +59,7 @@ static int appsFilter;
 -(void)updateFloatingCursorAtPoint:(CGPoint)point velocity:(CGPoint)vel{
     HBLogDebug(@"updateFloatingCursorAtPoint");
     %orig;
-    if (enabled && enabledOTextField){
+    if (enabled && enabledOnTextField){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -67,7 +67,7 @@ static int appsFilter;
 -(void)endFloatingCursor{
     HBLogDebug(@"endFloatingCursor");
     %orig;
-    if (enabled && enabledOTextField){
+    if (enabled && enabledOnTextField){
         [magnifier stopMagnifying:YES];
     }
 }
@@ -75,7 +75,7 @@ static int appsFilter;
 -(void)startAutoscroll:(CGPoint)point{
     HBLogDebug(@"startAutoscroll");
     %orig;
-    if (enabled && enabledOTextField && forceTrackpadMagnify){
+    if (enabled && enabledOnTextField && forceTrackpadMagnify){
         [magnifier beginMagnifyingTargetIfNecessary:[self valueForKey:@"_selectionView"] text:[self valueForKey:@"_view"] magnificationPoint:point offset:CGPointMake(xOffset, yOffset) animated:YES];
     }
 }
@@ -116,8 +116,8 @@ static void reloadPrefs(){
     id enabledVal = [prefsClient valueForKey:@"enabled"];
     enabled = enabledVal ? [enabledVal boolValue] : YES;
     
-    id enabledOTextFieldVal = [prefsClient valueForKey:@"enabledOTextField"];
-    enabledOTextField = enabledOTextFieldVal ? [enabledOTextFieldVal boolValue] : YES;
+    id enabledOnTextFieldVal = [prefsClient valueForKey:@"enabledOnTextField"];
+    enabledOnTextField = enabledOnTextFieldVal ? [enabledOnTextFieldVal boolValue] : YES;
     
     id enabledOnWebViewVal = [prefsClient valueForKey:@"enabledOnWebView"];
     enabledOnWebView = enabledOnWebViewVal ? [enabledOnWebViewVal boolValue] : YES;
@@ -188,6 +188,7 @@ BOOL loupeSwitchState(){
                         %init(LOUPE_GROUP)
                     }else{
                         magnifier = nil;
+                        prefsClient = nil;
                     }
                 }
             }

@@ -93,13 +93,13 @@
         [enabledOnWebViewGroupSpec setProperty:@"Enable magnifying glass in common text input fields and/or web views." forKey:@"footerText"];
         [rootSpecifiers addObject:enabledOnWebViewGroupSpec];
         
-        PSSpecifier *enabledOTextFieldSpec = [PSSpecifier preferenceSpecifierNamed:@"Text Field" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
-        [enabledOTextFieldSpec setProperty:@"Text Field" forKey:@"label"];
-        [enabledOTextFieldSpec setProperty:@"enabledOTextField" forKey:@"key"];
-        [enabledOTextFieldSpec setProperty:@YES forKey:@"default"];
-        [enabledOTextFieldSpec setProperty:LOUPE_IDENTIFIER forKey:@"defaults"];
-        [enabledOTextFieldSpec setProperty:PREFS_CHANGED_NN forKey:@"PostNotification"];
-        [rootSpecifiers addObject:enabledOTextFieldSpec];
+        PSSpecifier *enabledOnTextFieldSpec = [PSSpecifier preferenceSpecifierNamed:@"Text Field" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
+        [enabledOnTextFieldSpec setProperty:@"Text Field" forKey:@"label"];
+        [enabledOnTextFieldSpec setProperty:@"enabledOnTextField" forKey:@"key"];
+        [enabledOnTextFieldSpec setProperty:@YES forKey:@"default"];
+        [enabledOnTextFieldSpec setProperty:LOUPE_IDENTIFIER forKey:@"defaults"];
+        [enabledOnTextFieldSpec setProperty:PREFS_CHANGED_NN forKey:@"PostNotification"];
+        [rootSpecifiers addObject:enabledOnTextFieldSpec];
         
         //WebView
         PSSpecifier *enabledOnWebViewSpec = [PSSpecifier preferenceSpecifierNamed:@"Web View" target:self set:@selector(setPreferenceValue:specifier:) get:@selector(readPreferenceValue:) detail:nil cell:PSSwitchCell edit:nil];
